@@ -37,6 +37,7 @@ resource "aws_security_group" "all" {
 #src = source
 #dst = destination
 locals {
+  security_group_ids = { for config in aws_security_group.all : "${config.name}" => config.id }
   sg_rules_cidr = flatten([
     for sg_settings in local.all_sg_settings : [
       for rule in sg_settings["rules"] : {
