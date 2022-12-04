@@ -42,32 +42,57 @@ variable "max_unavailable_percentage" {
 # Security Group
 ################################################################################
 
-variable "eks_ng_secgrp_name" {
-  description = "EKS Node Group Security Group Name"
+variable "node_group_remote_access_security_group_name" {
+  description = "Security Group Name for EKS Node Group Remote Access"
   type        = string
 }
 
 variable "scaling_config_desired_size" {
-  description = "EKS Node Group Security Group Name"
+  description = "Desired number of worker nodes"
   type        = number
 }
 
 variable "scaling_config_max_size" {
-  description = "EKS Node Group Security Group Name"
+  description = "Maximum number of worker nodes"
   type        = number
 }
 
 variable "scaling_config_min_size" {
-  description = "EKS Node Group Security Group Name"
+  description = "Minimum number of worker nodes"
   type        = number
 }
 
 variable "node_group_name" {
-  description = "EKS Node Group Security Group Name"
+  description = "Name of the EKS Node Group"
   type        = string
 }
 
+variable "ami_release_version" {
+  description = "AMI version of the EKS Node Group. Defaults to latest version for Kubernetes version"
+  type        = string
+}
 
+variable "ami_type" {
+  description = "Type of Amazon Machine Image (AMI) associated with the EKS Node Group"
+  type        = string
+  #https://aws.amazon.com/bottlerocket/faqs/
+  default = "BOTTLEROCKET_x86_64"
+}
+
+variable "instance_types" {
+  description = "List of instance types associated with the EKS Node Group"
+  type        = list(string)
+}
+
+variable "capacity_type" {
+  description = "Type of capacity associated with the EKS Node Group. Valid values: ON_DEMAND, SPOT"
+  type        = string
+}
+
+variable "kube_version" {
+  description = "Kubernetes version"
+  type        = string
+}
 
 ################################################################################
 # Security Group
@@ -75,8 +100,9 @@ variable "node_group_name" {
 
 variable "vpc_core_outputs" {
   type = object({
-    vpc_name     = string
-    subnet_ids   = map(string)
+    vpc_name              = string
+    default_key_pair_name = string
+    subnet_ids            = map(string)
   })
   description = "VPC outputs"
 }
@@ -91,6 +117,8 @@ variable "security_groups_outputs" {
 variable "eks_cluster_outputs" {
   type = object({
     cluster_name = string
+    endpoint = string
+    ca_certificate = string
   })
   description = "Security groups outputs"
 }

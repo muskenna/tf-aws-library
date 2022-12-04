@@ -14,10 +14,11 @@ output "vpc_cidr_block" {
   value = aws_vpc.main.cidr_block
 }
 
-# output "keypair_name" {
-#   value = var.keypair_name
-# }
-
 output "subnet_ids" {
   value = local.subnet_ids
 }
+
+output "default_key_pair_name" {
+  value = aws_key_pair.default_key_pair.key_name
+}
+

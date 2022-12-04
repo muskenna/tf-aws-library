@@ -174,3 +174,25 @@ resource "aws_route_table_association" "private_secondary" {
   subnet_id      = local.subnet_ids["main-private-secondary"]
   route_table_id = aws_route_table.private_secondary.id
 }
+
+
+resource "tls_private_key" "instance" {
+  algorithm = "RSA"
+}
+
+resource "aws_key_pair" "default_key_pair" {
+  key_name   = "default-${var.default_vpc_name}"
+  public_key = tls_private_key.instance.public_key_openssh
+  tags = {
+    Name = "default-${var.default_vpc_name}"
+  }
+}
+
+resource "aws_secretsmanager_secret" "default_key_pair" {
+  name = "ec2/keypair/default-${var.default_vpc_name}"
+}
+
+resource "aws_secretsmanager_secret_version" "example" {
+  secret_id     = aws_secretsmanager_secret.default_key_pair.id
+  secret_string = tls_private_key.instance.private_key_pem
+}

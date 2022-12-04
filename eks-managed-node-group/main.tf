@@ -97,15 +97,28 @@ resource "aws_eks_node_group" "example" {
   node_role_arn   = aws_iam_role.this.arn
   subnet_ids      = [var.vpc_core_outputs.subnet_ids["${var.vpc_core_outputs.vpc_name}-private-primary"], var.vpc_core_outputs.subnet_ids["${var.vpc_core_outputs.vpc_name}-private-secondary"]]
 
+  remote_access {
+    ec2_ssh_key               = var.vpc_core_outputs.default_key_pair_name
+    source_security_group_ids = [var.security_groups_outputs.security_group_ids[var.node_group_remote_access_security_group_name]]
+  }
+
   scaling_config {
     desired_size = var.scaling_config_desired_size
     max_size     = var.scaling_config_max_size
     min_size     = var.scaling_config_min_size
   }
 
+  #https://docs.aws.amazon.com/eks/latest/APIReference/API_Nodegroup.html#AmazonEKS-Type-Nodegroup-amiType
+  ami_type = var.ami_type
+  #https://github.com/bottlerocket-os/bottlerocket/releases
+  #release_version = var.ami_release_version #AMI version of the EKS Node Group.
+  version        = var.kube_version #Kubernetes version
+  capacity_type  = var.capacity_type
+  instance_types = var.instance_types
+
   update_config {
-    max_unavailable = var.max_unavailable
-    max_unavailable_percentage  = var.max_unavailable_percentage
+    max_unavailable            = var.max_unavailable
+    max_unavailable_percentage = var.max_unavailable_percentage
   }
 
   # Ensure that IAM Role permissions are created before and deleted after EKS Node Group handling.

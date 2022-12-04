@@ -20,13 +20,11 @@ variable "deployment_tags" {
 variable "cluster_name" {
   description = "Name of the EKS cluster"
   type        = string
-  default     = ""
 }
 
-variable "cluster_version" {
+variable "kube_version" {
   description = "Kubernetes `<major>.<minor>` version to use for the EKS cluster (i.e.: `1.22`)"
   type        = string
-  default     = null
 }
 
 variable "cluster_enabled_log_types" {
@@ -69,7 +67,7 @@ variable "cluster_service_ipv4_cidr" {
 # Security Group
 ################################################################################
 
-variable "eks_secgrp_name" {
+variable "cluster_security_group_name" {
   description = "EKS Security Group Name"
   type        = string
 }
@@ -104,8 +102,8 @@ variable "cloudwatch_log_group_retention_in_days" {
 
 variable "vpc_core_outputs" {
   type = object({
-    vpc_name     = string
-    subnet_ids   = map(string)
+    vpc_name   = string
+    subnet_ids = map(string)
   })
   description = "VPC outputs"
 }
@@ -118,3 +116,26 @@ variable "security_groups_outputs" {
 }
 
 
+variable "max_session_duration" {
+  description = "Maximum CLI/API session duration in seconds between 3600 and 43200"
+  type        = number
+  default     = 43200
+}
+
+variable "role_permissions_boundary_arn" {
+  description = "Permissions boundary ARN to use for IAM role"
+  type        = string
+  default     = ""
+}
+
+variable "force_detach_policies" {
+  description = "Whether policies should be detached from this role when destroying"
+  type        = bool
+  default     = false
+}
+
+variable "assume_role_condition_test" {
+  description = "Name of the [IAM condition operator](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition_operators.html) to evaluate when assuming the role"
+  type        = string
+  default     = "StringEquals"
+}
